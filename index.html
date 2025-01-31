@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <section>
+      <p>Initialization</p>
+      <input id="apiUrl" placeholder="apiUrl" value="https://1103.api.green-api.com"/>
+      <input id="idInstance" placeholder="instance id" value="1103184359"/>
+      <input id="apiTokenInstance" placeholder="instance api token" value="c88783d9c1c644c2ad52714bf4936c4ee859356e8e5841ab8d"/>
+      <button id="connectButton">connect</button>
+      <button id="disconnectButton" disabled>disconnect</button>
+    </section>
+
+    <section style="margin-top: 16px;">
+      <p>Outgoing call</p>
+      <input id="phoneNumber" placeholder="phone number" disabled/>
+      <button id="startCallButton" disabled>start call</button>
+    </section>
+
+    <section>
+      <p>Current call</p>
+      <button id="endCallButton" disabled>end call</button>
+    </section>
+  </body>
+</html>
