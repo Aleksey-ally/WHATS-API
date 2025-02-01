@@ -76,6 +76,13 @@ export const sendingAPI = {
     }
 }
 
+export const serviceAPI = {
+    async checkWhatsapp(phoneNumber: number) {
+        const res = await instance.post<{existsWhatsapp:boolean}>(`checkWhatsapp`, {phoneNumber})
+        return res.data
+    }
+}
+
 export type incomingMessageReceivedResponse = {
     receiptId: number;
     body: IncomingMessageReceivedResponseBody;

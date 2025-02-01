@@ -13,11 +13,11 @@ const App: FC = () => {
         setCredentials({idInstance, apiTokenInstance});
         setIsLoggedIn(true);
     };
-    const ha = () => {
-        accountAPI.getSettings()
-            .then(() => setIsLoggedIn(true))
-            .catch((e) => console.error(e))
-    }
+    // const ha = () => {
+    //     accountAPI.getSettings()
+    //         .then(() => setIsLoggedIn(true))
+    //         .catch((e) => console.error(e))
+    // }
     return (
         <div>
             {!isLoggedIn ? (
