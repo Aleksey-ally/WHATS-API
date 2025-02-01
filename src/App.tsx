@@ -8,7 +8,6 @@ import log = require("eslint-plugin-react/lib/util/log");
 const App: FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [credentials, setCredentials] = useState<{ idInstance: string; apiTokenInstance: string } | null>(null);
-    const [recipient, setRecipient] = useState('');
 
     const handleLogin = (idInstance: string, apiTokenInstance: string) => {
         setCredentials({idInstance, apiTokenInstance});
@@ -16,15 +15,15 @@ const App: FC = () => {
     };
     const ha = () => {
         accountAPI.getSettings()
-            .then((res) => setIsLoggedIn(true))
+            .then(() => setIsLoggedIn(true))
             .catch((e) => console.error(e))
     }
     return (
         <div>
             {!isLoggedIn ? (
-                <Login onLogin={ha}/>
+                <Login onLogin={handleLogin}/>
             ) : (
-                <Chat credentials={credentials!} recipient={recipient} setRecipient={setRecipient}/>
+                <Chat credentials={credentials!}/>
             )}
         </div>
     );

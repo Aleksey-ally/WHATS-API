@@ -49,8 +49,6 @@ export const accountAPI = {
 }
 
 
-
-
 export const receivingAPI = {
     // {{apiUrl}}/waInstance{{idInstance}}/receiveNotification/{{apiTokenInstance}}?receiveTimeout={{seconds}}
     async receiveNotification() {
@@ -63,47 +61,55 @@ export const receivingAPI = {
         receiptId = receiptIdArg
         const res = await instance.delete(`deleteNotification`)
         return res.data
-    } ,
+    },
     async lastOutgoingMessages() {
         const res = await instance.get(`lastOutgoingMessages`)
         return res.data
     }
 }
 
+export const sendingAPI = {
+    async sendMessage(chatId: string, message: string) {
+        const payload = {chatId, message}
+        const res = await instance.post(`sendMessage`, payload)
+        return res.data
+    }
+}
+
 export type incomingMessageReceivedResponse = {
-	receiptId: number;
-	body: IncomingMessageReceivedResponseBody;
+    receiptId: number;
+    body: IncomingMessageReceivedResponseBody;
 }
 export type IncomingMessageReceivedResponseBodyInstanceData = {
-	idInstance: number;
-	wid: string;
-	typeInstance: string;
+    idInstance: number;
+    wid: string;
+    typeInstance: string;
 }
 export type IncomingMessageReceivedResponseBodySenderData = {
-	chatId: string;
-	chatName: string;
-	sender: string;
-	senderName: string;
-	senderContactName: string;
+    chatId: string;
+    chatName: string;
+    sender: string;
+    senderName: string;
+    senderContactName: string;
 }
 export type IncomingMessageReceivedResponseBodyMessageDataExtendedTextMessageData = {
-	text: string;
-	description: string;
-	title: string;
-	previewType: string;
-	jpegThumbnail: string;
-	forwardingScore: number;
-	isForwarded: boolean;
+    text: string;
+    description: string;
+    title: string;
+    previewType: string;
+    jpegThumbnail: string;
+    forwardingScore: number;
+    isForwarded: boolean;
 }
 export type IncomingMessageReceivedResponseBodyMessageData = {
-	typeMessage: string;
-	extendedTextMessageData: IncomingMessageReceivedResponseBodyMessageDataExtendedTextMessageData;
+    typeMessage: string;
+    extendedTextMessageData: IncomingMessageReceivedResponseBodyMessageDataExtendedTextMessageData;
 }
 export type IncomingMessageReceivedResponseBody = {
-	typeWebhook: string;
-	instanceData: IncomingMessageReceivedResponseBodyInstanceData;
-	timestamp: number;
-	idMessage: string;
-	senderData: IncomingMessageReceivedResponseBodySenderData;
-	messageData: IncomingMessageReceivedResponseBodyMessageData;
+    typeWebhook: string;
+    instanceData: IncomingMessageReceivedResponseBodyInstanceData;
+    timestamp: number;
+    idMessage: string;
+    senderData: IncomingMessageReceivedResponseBodySenderData;
+    messageData: IncomingMessageReceivedResponseBodyMessageData;
 }

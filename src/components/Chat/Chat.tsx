@@ -1,35 +1,34 @@
 import {useState, useEffect, FC} from 'react';
 import axios from 'axios';
 import styles from './Chat.module.scss';
-import {accountAPI, receivingAPI} from "@/api/base-api";
+import {accountAPI, IncomingMessageReceivedResponseBody, receivingAPI, sendingAPI} from "@/api/base-api";
 
 type ChatProps = {
     credentials: { idInstance: string; apiTokenInstance: string };
-    recipient: string;
-    setRecipient: (recipient: string) => void;
 }
 
 
-const Chat: FC<ChatProps> = ({credentials, recipient, setRecipient}) => {
+const Chat: FC<ChatProps> = ({credentials}) => {
+    const [recipient, setRecipient] = useState('');
     const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([]);
+    const [messages, setMessages] = useState<{ text: string; isUser: boolean, idMessage: string }[]>([]);
+
+    const addMessage = (text: string, isUser: boolean, idMessage: string) => {
+        setMessages((prev) => {
+            const isDuplicate = prev.some((msg) => msg.idMessage === idMessage);
+            if (isDuplicate) return prev;
+            return [...prev, {text, isUser, idMessage}];
+        });
+    }
 
     const sendMessage = async () => {
-        if (!message.trim() || !recipient.trim()) return;
+        if (!message.trim()) return;
 
-        const url = `https://1103.api.green-api.com/waInstance${credentials.idInstance}/SendMessage/${credentials.apiTokenInstance}`;
-        const data = {
-            chatId: `${recipient}@c.us`,
-            message: message,
-        };
-
-        try {
-            await axios.post(url, data);
-            setMessages((prev) => [...prev, {text: message, isUser: true}]);
-            setMessage('');
-        } catch (error) {
-            console.error('Ошибка отправки сообщения:', error);
-        }
+        await sendingAPI.sendMessage(`${recipient}@c.us`, message)
+            .then((res) => {
+                addMessage(message, true, res.idMessage)
+            })
+            .catch(e => console.error('Ошибка отправки сообщения:', e))
     };
 
     // const fetchMessages = async () => {
@@ -53,12 +52,8 @@ const Chat: FC<ChatProps> = ({credentials, recipient, setRecipient}) => {
             const body = response.body
             if (body.typeWebhook === 'incomingMessageReceived') {
                 console.log(body.messageData.extendedTextMessageData.text)
-                setMessages((prev) => {
-                    const isDuplicate = prev.some((msg) => msg.text === body.messageData.extendedTextMessageData.text);
-                    if (isDuplicate) return prev;
-                    return [...prev, {text: body.messageData.extendedTextMessageData.text, isUser: false}];
-                });
-
+                // debugger
+                addMessage(body.messageData.extendedTextMessageData.text, false, body.idMessage)
                 await receivingAPI.deleteNotification(response.receiptId);
             } else if (body.typeWebhook === 'stateInstanceChanged') {
                 console.log('stateInstanceChanged')
@@ -70,11 +65,8 @@ const Chat: FC<ChatProps> = ({credentials, recipient, setRecipient}) => {
                 console.log('outgoingMessageReceived')
                 await receivingAPI.deleteNotification(response.receiptId);
             } else if (body.typeWebhook === 'outgoingAPIMessageReceived') {
-                setMessages((prev) => {
-                    const isDuplicate = prev.some((msg) => msg.text === body.messageData.extendedTextMessageData.text);
-                    if (isDuplicate) return prev;
-                    return [...prev, {text: body.messageData.extendedTextMessageData.text, isUser: false}];
-                });
+                // debugger
+                addMessage(body.messageData.extendedTextMessageData.text, false, body.idMessage)
                 console.log('outgoingMessageReceived')
                 await receivingAPI.deleteNotification(response.receiptId);
             }
