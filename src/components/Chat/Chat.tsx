@@ -1,7 +1,6 @@
-import {useState, useEffect, FC} from 'react';
-import axios from 'axios';
+import {FC, useEffect, useState} from 'react';
 import styles from './Chat.module.scss';
-import {accountAPI, IncomingMessageReceivedResponseBody, receivingAPI, sendingAPI, serviceAPI} from "@/api/base-api";
+import {receivingAPI, sendingAPI, serviceAPI} from "@/api/base-api";
 
 type ChatProps = {
     credentials: { idInstance: string; apiTokenInstance: string };
@@ -25,7 +24,7 @@ const Chat: FC<ChatProps> = ({credentials}) => {
     const checkRecipient = async () => {
         await serviceAPI.checkWhatsapp(recipient)
             .then(res => {
-                if (res.existsWhatsapp){
+                if (res.existsWhatsapp) {
                     setOpenChat(true)
                 }
             })
@@ -43,22 +42,6 @@ const Chat: FC<ChatProps> = ({credentials}) => {
             .catch(e => console.error('Ошибка отправки сообщения:', e))
     };
 
-    // const fetchMessages = async () => {
-    //     const url = `https://api.green-api.com/waInstance${credentials.idInstance}/ReceiveNotification/${credentials.apiTokenInstance}`;
-    //
-    //     try {
-    //         const response = await axios.get(url);
-    //         if (response.data) {
-    //             const messageData = response.data.body.messageData.textMessageData.textMessage;
-    //             setMessages((prev) => [...prev, {text: messageData, isUser: false}]);
-    //             await axios.delete(
-    //                 `https://api.green-api.com/waInstance${credentials.idInstance}/DeleteNotification/${credentials.apiTokenInstance}/${response.data.receiptId}`
-    //             );
-    //         }
-    //     } catch (error) {
-    //         console.error('Ошибка получения сообщений:', error);
-    //     }
-    // };
     const fetchData = async () => {
         while (response = await receivingAPI.receiveNotification()) {
             const body = response.body
@@ -91,11 +74,9 @@ const Chat: FC<ChatProps> = ({credentials}) => {
         (async () => {
 
             await fetchData().catch(e => console.error(e))
-
             const interval = setInterval(fetchData, 5000);
 
             return () => clearInterval(interval);
-
         })()
     }, []);
 

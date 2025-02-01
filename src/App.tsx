@@ -1,8 +1,6 @@
 import {FC, useState} from 'react';
 import Login from './components/Login/Login'
 import Chat from './components/Chat/Chat';
-import {accountAPI} from "./api/base-api";
-import log = require("eslint-plugin-react/lib/util/log");
 // import 'index.css';
 
 const App: FC = () => {
@@ -13,11 +11,7 @@ const App: FC = () => {
         setCredentials({idInstance, apiTokenInstance});
         setIsLoggedIn(true);
     };
-    // const ha = () => {
-    //     accountAPI.getSettings()
-    //         .then(() => setIsLoggedIn(true))
-    //         .catch((e) => console.error(e))
-    // }
+
     return (
         <div>
             {!isLoggedIn ? (
