@@ -1,14 +1,16 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, FC} from 'react';
 import axios from 'axios';
 import styles from './Chat.module.scss';
+import {accountAPI, receivingAPI} from "@/api/base-api";
 
-interface ChatProps {
+type ChatProps = {
     credentials: { idInstance: string; apiTokenInstance: string };
     recipient: string;
     setRecipient: (recipient: string) => void;
 }
 
-const Chat: React.FC<ChatProps> = ({credentials, recipient, setRecipient}) => {
+
+const Chat: FC<ChatProps> = ({credentials, recipient, setRecipient}) => {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([]);
 
@@ -30,26 +32,66 @@ const Chat: React.FC<ChatProps> = ({credentials, recipient, setRecipient}) => {
         }
     };
 
-    const fetchMessages = async () => {
-        const url = `https://api.green-api.com/waInstance${credentials.idInstance}/ReceiveNotification/${credentials.apiTokenInstance}`;
+    // const fetchMessages = async () => {
+    //     const url = `https://api.green-api.com/waInstance${credentials.idInstance}/ReceiveNotification/${credentials.apiTokenInstance}`;
+    //
+    //     try {
+    //         const response = await axios.get(url);
+    //         if (response.data) {
+    //             const messageData = response.data.body.messageData.textMessageData.textMessage;
+    //             setMessages((prev) => [...prev, {text: messageData, isUser: false}]);
+    //             await axios.delete(
+    //                 `https://api.green-api.com/waInstance${credentials.idInstance}/DeleteNotification/${credentials.apiTokenInstance}/${response.data.receiptId}`
+    //             );
+    //         }
+    //     } catch (error) {
+    //         console.error('Ошибка получения сообщений:', error);
+    //     }
+    // };
+    const fetchData = async () => {
+        while (response = await receivingAPI.receiveNotification()) {
+            const body = response.body
+            if (body.typeWebhook === 'incomingMessageReceived') {
+                console.log(body.messageData.extendedTextMessageData.text)
+                setMessages((prev) => {
+                    const isDuplicate = prev.some((msg) => msg.text === body.messageData.extendedTextMessageData.text);
+                    if (isDuplicate) return prev;
+                    return [...prev, {text: body.messageData.extendedTextMessageData.text, isUser: false}];
+                });
 
-        try {
-            const response = await axios.get(url);
-            if (response.data) {
-                const messageData = response.data.body.messageData.textMessageData.textMessage;
-                setMessages((prev) => [...prev, {text: messageData, isUser: false}]);
-                await axios.delete(
-                    `https://api.green-api.com/waInstance${credentials.idInstance}/DeleteNotification/${credentials.apiTokenInstance}/${response.data.receiptId}`
-                );
+                await receivingAPI.deleteNotification(response.receiptId);
+            } else if (body.typeWebhook === 'stateInstanceChanged') {
+                console.log('stateInstanceChanged')
+                await receivingAPI.deleteNotification(response.receiptId);
+            } else if (body.typeWebhook === 'outgoingMessageStatus') {
+                console.log('outgoingMessageStatus')
+                await receivingAPI.deleteNotification(response.receiptId);
+            } else if (body.typeWebhook === 'outgoingMessageReceived') {
+                console.log('outgoingMessageReceived')
+                await receivingAPI.deleteNotification(response.receiptId);
+            } else if (body.typeWebhook === 'outgoingAPIMessageReceived') {
+                setMessages((prev) => {
+                    const isDuplicate = prev.some((msg) => msg.text === body.messageData.extendedTextMessageData.text);
+                    if (isDuplicate) return prev;
+                    return [...prev, {text: body.messageData.extendedTextMessageData.text, isUser: false}];
+                });
+                console.log('outgoingMessageReceived')
+                await receivingAPI.deleteNotification(response.receiptId);
             }
-        } catch (error) {
-            console.error('Ошибка получения сообщений:', error);
         }
-    };
+    }
 
+    let response
     useEffect(() => {
-        // const interval = setInterval(fetchMessages, 5000); // Проверка новых сообщений каждые 5 секунд
-        // return () => clearInterval(interval);
+        (async () => {
+
+            await fetchData().catch(e => console.error(e))
+
+            const interval = setInterval(fetchData, 5000);
+
+            return () => clearInterval(interval);
+
+        })()
     }, []);
 
     return (

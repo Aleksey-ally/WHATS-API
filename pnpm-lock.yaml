@@ -17,6 +17,9 @@ dependencies:
   sass:
     specifier: ^1.83.4
     version: 1.83.4
+  typescript:
+    specifier: ^5.7.3
+    version: 5.7.3
 
 devDependencies:
   '@eslint/js':
@@ -2512,6 +2515,12 @@ packages:
       possible-typed-array-names: 1.0.0
       reflect.getprototypeof: 1.0.10
     dev: true
+
+  /typescript@5.7.3:
+    resolution: {integrity: sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+    dev: false
 
   /unbox-primitive@1.1.0:
     resolution: {integrity: sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==}

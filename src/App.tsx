@@ -17,7 +17,7 @@ const App: FC = () => {
     const ha = () => {
         accountAPI.getSettings()
             .then((res) => setIsLoggedIn(true))
-            .catch((e) => console.log(e))
+            .catch((e) => console.error(e))
     }
     return (
         <div>
