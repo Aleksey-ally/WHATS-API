@@ -53,7 +53,7 @@ const Chat: FC<ChatProps> = ({setErrorResponse}) => {
             .then((res) => {
                 addMessage(message, true, res.idMessage)
             })
-            .catch(e => setError('Ошибка отправки сообщения:'))
+            .catch(() => setError('Ошибка отправки сообщения:'))
     };
 
     const fetchData = async () => {
