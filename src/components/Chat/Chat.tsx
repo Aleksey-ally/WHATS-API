@@ -30,7 +30,7 @@ const Chat = ({setErrorResponse}: ChatProps) => {
         await serviceAPI.checkWhatsapp(recipient)
             .then(res => {
                 if (res.existsWhatsapp) {
-                    setError('Некорректный номер')
+                    setError('')
                     setOpenChat(true)
                 } else {
                     setOpenChat(false)
