@@ -12,7 +12,7 @@
 
 📥 Через HTTPS: git clone https://github.com/Aleksey-ally/WHATS-API.git
 
-🔑 Через SSH: git clone git@github.com:Aleksey-ally/WHATS-API.git
+🔑 Через SSH: git clone `git@github.com:Aleksey-ally/WHATS-API.git`
 
 📦 Скачать ZIP-архив и распаковать его.
 ![screen-download.png](assets/screenDownload.png)
@@ -20,26 +20,13 @@
 
 2️⃣ Открытие в IDE и запуск
 
-🛠 В WebStorm:
+🛠 В WebStorm или VSCode:
 
-1) Открываем WebStorm
-
-2) Загружаем папку проекта
-
-3) Открываем терминал и запускаем команду:
-
-4) npm install или pnpm install
-
-5) npm run dev или pnpm dev
-
-
-🛠 В VSCode:
-
-1) Открываем VSCode
+1) Открываем WebStorm или VSCode
 
 2) Загружаем папку проекта
 
-3) Открываем терминал и выполняем:
+3) Открываем терминал и запускаем команды:
 
 4) npm install или pnpm install
 
