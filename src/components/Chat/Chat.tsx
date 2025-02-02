@@ -53,6 +53,7 @@ const Chat = ({setErrorResponse}: ChatProps) => {
         await sendingAPI.sendMessage(`${recipient}@c.us`, message)
             .then((res) => {
                 addMessage(message, true, res.idMessage)
+                setMessage("")
             })
             .catch(() => setError('Ошибка отправки сообщения:'))
     };
