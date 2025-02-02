@@ -1,17 +1,19 @@
 import {FC, useEffect, useState} from 'react';
-import styles from './Chat.module.scss';
+import s from './Chat.module.scss';
 import {receivingAPI, sendingAPI, serviceAPI} from "@/api/base-api";
 
 type ChatProps = {
-    credentials: { idInstance: string; apiTokenInstance: string };
+    setErrorResponse: (error: string) => void
 }
 
 
-const Chat: FC<ChatProps> = ({credentials}) => {
+const Chat: FC<ChatProps> = ({setErrorResponse}) => {
     const [recipient, setRecipient] = useState<number>(null);
     const [message, setMessage] = useState<string>('');
     const [messages, setMessages] = useState<{ text: string; isUser: boolean, idMessage: string }[]>([]);
     const [openChat, setOpenChat] = useState<boolean>(false)
+    const [error, setError] = useState<string>('')
+
 
     const addMessage = (text: string, isUser: boolean, idMessage: string) => {
         setMessages((prev) => {
@@ -22,13 +24,24 @@ const Chat: FC<ChatProps> = ({credentials}) => {
     }
 
     const checkRecipient = async () => {
+
         await serviceAPI.checkWhatsapp(recipient)
             .then(res => {
                 if (res.existsWhatsapp) {
+                    setError('Некорректный номер')
                     setOpenChat(true)
+                } else {
+                    setOpenChat(false)
+                    setError('Некорректный номер')
                 }
             })
-            .catch(e => console.error(e))
+            .catch(e => {
+                if (e.status === 466){
+                   setError('Превышена месячная квота')
+                } else {
+                    setError('Error Network')
+                }
+            })
 
     }
 
@@ -43,33 +56,41 @@ const Chat: FC<ChatProps> = ({credentials}) => {
     };
 
     const fetchData = async () => {
-        while (response = await receivingAPI.receiveNotification()) {
+        while (response = await receivingAPI.receiveNotification().catch(e => setErrorResponse(e.message))) {
             const body = response.body
             if (body.typeWebhook === 'incomingMessageReceived') {
-                console.log(body.messageData.extendedTextMessageData.text)
-                // debugger
+
                 addMessage(body.messageData.extendedTextMessageData.text, false, body.idMessage)
                 await receivingAPI.deleteNotification(response.receiptId);
+
             } else if (body.typeWebhook === 'stateInstanceChanged') {
-                console.log('stateInstanceChanged')
+
                 await receivingAPI.deleteNotification(response.receiptId);
+
             } else if (body.typeWebhook === 'outgoingMessageStatus') {
-                console.log('outgoingMessageStatus')
+
                 await receivingAPI.deleteNotification(response.receiptId);
+
             } else if (body.typeWebhook === 'outgoingMessageReceived') {
-                console.log('outgoingMessageReceived')
-                addMessage(body.messageData.extendedTextMessageData.text, false, body.idMessage)
-                await receivingAPI.deleteNotification(response.receiptId);
+                if (body.messageData.textMessageData?.textMessage) {
+                    addMessage(body.messageData.textMessageData.textMessage, false, body.idMessage)
+                    await receivingAPI.deleteNotification(response.receiptId);
+                } else {
+                    addMessage(body.messageData.extendedTextMessageData.text, false, body.idMessage)
+                    await receivingAPI.deleteNotification(response.receiptId);
+                }
+
+
             } else if (body.typeWebhook === 'outgoingAPIMessageReceived') {
-                // debugger
+
                 addMessage(body.messageData.extendedTextMessageData.text, false, body.idMessage)
-                console.log('outgoingMessageReceived')
                 await receivingAPI.deleteNotification(response.receiptId);
             }
         }
     }
 
     let response
+
     useEffect(() => {
         (async () => {
 
@@ -81,32 +102,37 @@ const Chat: FC<ChatProps> = ({credentials}) => {
     }, []);
 
     return (
-        <div className={styles.chat}>
-            <div className={styles.header}>
-                <input
-                    type="number"
-                    placeholder="Введите номер получателя"
-                    value={recipient}
-                    onChange={(e) => setRecipient(e.target.value)}
-                    required
-                />
-                <button onClick={checkRecipient}>Начать чат</button>
+        <div className={s.chat}>
+            <div className={s.header}>
+                <div className={s.searchBar}>
+                    <input
+                        type="number"
+                        placeholder="Введите номер получателя"
+                        value={recipient}
+                        onChange={(e) => setRecipient(Number(e.target.value))}
+                        onKeyDown={(e) => e.key === 'Enter' && checkRecipient()}
+                        required
+                    />
+                    <button onClick={checkRecipient}>Начать чат</button>
+                </div>
+                {error && <span className={s.error}>{error}</span>}
+
             </div>
             {openChat && <>
-                <div className={styles.messages}>
+                <div className={s.messages}>
                     {messages.map((msg, index) => (
-                        <div key={index} className={`${styles.message} ${msg.isUser ? styles.user : styles.recipient}`}>
+                        <div key={index} className={`${s.message} ${msg.isUser ? s.user : s.recipient}`}>
                             {msg.text}
                         </div>
                     ))}
                 </div>
-                <div className={styles.inputArea}>
+                <div className={s.inputArea}>
                     <input
                         type="text"
                         placeholder="Введите сообщение"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                        onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                     />
                     <button onClick={sendMessage}>Отправить</button>
                 </div>

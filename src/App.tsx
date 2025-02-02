@@ -1,23 +1,32 @@
 import {FC, useState} from 'react';
 import Login from './components/Login/Login'
 import Chat from './components/Chat/Chat';
-// import 'index.css';
+import s from "./App.module.scss";
+import {setInstance} from "@/api/base-api.ts";
 
 const App: FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [credentials, setCredentials] = useState<{ idInstance: string; apiTokenInstance: string } | null>(null);
+    const [errorResponse, setErrorResponse] = useState<string>('')
 
-    const handleLogin = (idInstance: string, apiTokenInstance: string) => {
-        setCredentials({idInstance, apiTokenInstance});
+    const handleLogin = async (idInstance: string, apiTokenInstance: string) => {
+        setInstance(idInstance, apiTokenInstance)
         setIsLoggedIn(true);
+    };
+
+    const handleErrorResponse = (error: string) => {
+        setErrorResponse(error);
+        setIsLoggedIn(false);
     };
 
     return (
         <div>
             {!isLoggedIn ? (
-                <Login onLogin={handleLogin}/>
+                <>
+                    {errorResponse && <h1 className={s.error}>{errorResponse}</h1>}
+                    <Login onLogin={handleLogin}/>
+                </>
             ) : (
-                <Chat credentials={credentials!}/>
+                <Chat setErrorResponse={handleErrorResponse}/>
             )}
         </div>
     );
