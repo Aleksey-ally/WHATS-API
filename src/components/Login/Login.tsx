@@ -1,11 +1,11 @@
-import {FC, FormEvent} from 'react';
+import {FormEvent} from 'react';
 import s from './Login.module.scss';
 
 type LoginProps = {
     onLogin: (idInstance: string, apiTokenInstance: string) => void;
 }
 
-const Login: FC<LoginProps> = ({onLogin}) => {
+const Login = ({onLogin}: LoginProps) => {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         const formData = new FormData(e.target as HTMLFormElement);

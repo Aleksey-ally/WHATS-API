@@ -1,13 +1,15 @@
-import {FC, useEffect, useState} from 'react';
 import s from './Chat.module.scss';
-import {receivingAPI, sendingAPI, serviceAPI} from "@/api/base-api";
+import {useEffect, useState} from 'react';
 import {Messages} from "@/components/Chat/Messages/Messages.tsx";
+import {serviceAPI} from "@/api/service";
+import {sendingAPI} from "@/api/sending";
+import {receivingAPI} from "@/api/receiving";
 
 type ChatProps = {
     setErrorResponse: (error: string) => void
 }
 
-const Chat: FC<ChatProps> = ({setErrorResponse}) => {
+const Chat = ({setErrorResponse}: ChatProps) => {
     const [recipient, setRecipient] = useState<number>(null);
     const [message, setMessage] = useState<string>('');
     const [messages, setMessages] = useState<Messages>([]);
@@ -43,7 +45,6 @@ const Chat: FC<ChatProps> = ({setErrorResponse}) => {
                     setError('Error Network')
                 }
             })
-
     }
 
     const sendMessage = async () => {
@@ -119,7 +120,8 @@ const Chat: FC<ChatProps> = ({setErrorResponse}) => {
                 {error && <span className={s.error}>{error}</span>}
 
             </header>
-            {openChat && <Messages messages={messages} sendMessage={sendMessage} message={message} setMessage={setMessage}/>}
+            {openChat &&
+                <Messages messages={messages} sendMessage={sendMessage} message={message} setMessage={setMessage}/>}
         </main>
     );
 };

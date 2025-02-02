@@ -1,4 +1,4 @@
-import s from "@/components/Chat/Chat.module.scss";
+import s from "./Messages.module.scss";
 
 export type MessagesProps = {
     message: string

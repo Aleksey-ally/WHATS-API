@@ -1,10 +1,10 @@
-import {FC, useState} from 'react';
-import Login from './components/Login/Login'
-import Chat from './components/Chat/Chat';
-import s from "./App.module.scss";
+import s from "@/App.module.scss";
+import {useState} from 'react';
+import Login from '@/components/Login/Login'
+import Chat from '@/components/Chat/Chat';
 import {setInstance} from "@/api/base-api.ts";
 
-const App: FC = () => {
+const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [errorResponse, setErrorResponse] = useState<string>('')
 
