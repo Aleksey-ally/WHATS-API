@@ -63,8 +63,13 @@ const Chat = ({setErrorResponse}: ChatProps) => {
             const body = response.body
             if (body.typeWebhook === 'incomingMessageReceived') {
 
-                addMessage(body.messageData.extendedTextMessageData.text, false, body.idMessage)
-                await receivingAPI.deleteNotification(response.receiptId);
+                if (body.messageData.textMessageData?.textMessage) {
+                    addMessage(body.messageData.textMessageData.textMessage, false, body.idMessage)
+                    await receivingAPI.deleteNotification(response.receiptId);
+                } else {
+                    addMessage(body.messageData.extendedTextMessageData.text, false, body.idMessage)
+                    await receivingAPI.deleteNotification(response.receiptId);
+                }
 
             } else if (body.typeWebhook === 'stateInstanceChanged') {
 
