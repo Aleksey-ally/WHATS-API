@@ -40,4 +40,4 @@
 
 🛠 Используемый стек технологий
 
-React, TypeScript, Vite, Axios
+React, TypeScript, Vite, Axios, SASS (SCSS)
